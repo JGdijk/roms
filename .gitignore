@@ -1,0 +1,7 @@
+/dist
+/etc
+/lib
+/node_modules
+/temp
+/.idea
+package-lock.json
