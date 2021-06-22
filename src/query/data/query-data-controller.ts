@@ -23,10 +23,15 @@ export class QueryDataController {
      ******************************************************************/
 
     public find(id: number | string): Observable<unknown> {
-        // todo check if id
         this.returnType = 'find';
         this.queryData.setTargetIds([id]);
         return this.result();
+    }
+
+    public findMany(ids: (number | string)[]): Observable<unknown>[] {
+        this.returnType = 'find_many';
+        this.queryData.setTargetIds(ids);
+        return this.results();
     }
 
     public first(): Observable<unknown> {
@@ -56,6 +61,12 @@ export class QueryDataController {
         this.returnType = 'find';
         this.queryData.setTargetIds([id]);
         return this.returnData();
+    }
+
+    public findManyStatic(ids: (number | string)[]): any[] {
+        this.returnType = 'find_many';
+        this.queryData.setTargetIds(ids);
+        return this.returnDataMany();
     }
 
     public firstStatic(): unknown {

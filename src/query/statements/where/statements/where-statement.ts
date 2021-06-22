@@ -23,6 +23,7 @@ export class WhereStatement implements WhereStatementInterface {
 
         switch (this.action) {
             case '===':
+            case '=':
                 return (object[this.key] === this.value);
             case '!==':
                 return (object[this.key] !== this.value);
@@ -30,8 +31,6 @@ export class WhereStatement implements WhereStatementInterface {
                 return (object[this.key] == this.value);
             case '!=':
                 return (object[this.key] != this.value);
-            case '=':
-                return (object[this.key] == this.value);
             case '>':
                 return (object[this.key] > this.value);
             case '<':

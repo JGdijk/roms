@@ -40,12 +40,11 @@ export class PushController {
     }
 
     public check(): CollectorPushResult {
-
-        this.remover.run();
         this.detacher.run();
+        this.remover.run();
 
-        this.adder.run();
         this.attacher.run();
+        this.adder.run();
 
         this.updater.run();
 

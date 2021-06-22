@@ -42,6 +42,10 @@ export class QueryBuilder {
         return this.queryDataController.find(id);
     }
 
+    public findMany(ids: (number | string)[]): Observable<any>[] {
+        return this.queryDataController.findMany(ids);
+    }
+
     public first(): Observable<any> {
         return this.queryDataController.first()
     }
@@ -62,6 +66,10 @@ export class QueryBuilder {
 
     public findStatic(id: number | string): any {
         return this.queryDataController.findStatic(id);
+    }
+
+    public findManyStatic(ids: (number | string)[]): Observable<any>[] {
+        return this.queryDataController.findManyStatic(ids);
     }
 
     public firstStatic(): any {

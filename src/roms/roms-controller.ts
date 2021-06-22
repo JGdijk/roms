@@ -74,11 +74,6 @@ export class RomsController {
             }
         }
 
-        // create all the relation getters.
-        for (const modelStorage of this.getModelStorageContainer().get()) {
-            modelStorage.createRelationGetters();
-        }
-
     }
 
     public add(key: string, objects: { [key: string]: unknown }[]): void {

@@ -6,9 +6,11 @@ import {ModelStorage} from "../store/model-storage";
 
 export class QueryStarter {
 
-    private modelStorage: ModelStorage;
+    // todo only made public for model internal use should find solution to this
+    public modelStorage: ModelStorage;
 
-    private romsController: RomsController;
+    // todo only made public for model internal use should find solution to this
+    public romsController: RomsController;
 
     constructor(modelStorage: ModelStorage, romsController: RomsController) {
         this.modelStorage = modelStorage;
@@ -21,6 +23,10 @@ export class QueryStarter {
 
     public find(id: number | string): Observable<unknown> {
         return this.createQuery().find(id);
+    }
+
+    public findMany(ids: (number | string)[]): Observable<any>[] {
+        return this.createQuery().findMany(ids);
     }
 
     public first(): Observable<any> {
@@ -42,6 +48,10 @@ export class QueryStarter {
     // static
     public findStatic(id: number | string): any {
         return this.createQuery().findStatic(id);
+    }
+
+    public findManyStatic(ids: (number | string)[]): Observable<any>[] {
+        return this.createQuery().findManyStatic(ids);
     }
 
     public firstStatic(): any {

@@ -85,6 +85,7 @@ export class ModelStorage {
         return added_ids;
     }
 
+    // todo what if ids is wrong?
     public update(ids: (number | string)[], data: {[key: string]: unknown}, collector: Collector): void {
         let object = { ...data }
 
@@ -180,7 +181,7 @@ export class ModelStorage {
             properties[key] = object[key];
         }
 
-        let new_model  = new this.model_constructor(properties);
+        let new_model  = new this.model_constructor(properties, this.createQuery() ,this.primaryKey);
 
         for (const relation of relations) {
             Object.defineProperty(new_model, relation.key, {
@@ -215,65 +216,65 @@ export class ModelStorage {
         const self = this;
 
         // update
-        this.model_constructor.prototype['update'] = function (data: any): void { // todo type?
-            const id = self.getPrimaryKeyValue(this);
-
-            if (!self.has(id)) {
-                // todo error object doesn't exist
-                return;
-            }
-
-            self.romsController.update(self.getName(), [id], data);
-        };
+        // this.model_constructor.prototype['update'] = function (data: any): void { // todo type?
+        //     const id = self.getPrimaryKeyValue(this);
+        //
+        //     if (!self.has(id)) {
+        //         // todo error object doesn't exist
+        //         return;
+        //     }
+        //
+        //     self.romsController.update(self.getName(), [id], data);
+        // };
 
         // remove
-        this.model_constructor.prototype['remove'] = function (): void {
-            const id = self.getPrimaryKeyValue(this);
-
-            if (!self.has(id)) {
-                // todo error object doesn't exist
-                return;
-            }
-
-            self.romsController.remove(self.getName(), [id]);
-        };
+        // this.model_constructor.prototype['remove'] = function (): void {
+        //     const id = self.getPrimaryKeyValue(this);
+        //
+        //     if (!self.has(id)) {
+        //         // todo error object doesn't exist
+        //         return;
+        //     }
+        //
+        //     self.romsController.remove(self.getName(), [id]);
+        // };
 
         // attach
-        this.model_constructor.prototype['attach'] = function (relation: string, ids?: number | string | number[] | string[]): void {
-            const id = self.getPrimaryKeyValue(this);
+        // this.model_constructor.prototype['attach'] = function (relation: string, ids?: number | string | number[] | string[]): void {
+        //     const id = self.getPrimaryKeyValue(this);
+        //
+        //     if (!self.has(id)) {
+        //         // todo error object doesn't exist
+        //         return;
+        //     }
+        //
+        //     const ids_array: any = (!Array.isArray(ids)) ? [ids] : ids;
+        //
+        //     self.romsController.attach(
+        //         self.getName(),
+        //         relation,
+        //         [id],
+        //         ids_array
+        //     )
+        // };
 
-            if (!self.has(id)) {
-                // todo error object doesn't exist
-                return;
-            }
-
-            const ids_array: any = (!Array.isArray(ids)) ? [ids] : ids;
-
-            self.romsController.attach(
-                self.getName(),
-                relation,
-                [id],
-                ids_array
-            )
-        };
-
-        this.model_constructor.prototype['detach'] = function (relation: string, ids?: number | string | number[] | string[]): void {
-            const id = self.getPrimaryKeyValue(this);
-
-            if (!self.has(id)) {
-                // todo error object doesn't exist
-                return;
-            }
-
-            const ids_array: any = (!Array.isArray(ids)) ? [ids] : ids;
-
-            self.romsController.detach(
-                self.getName(),
-                relation,
-                [id],
-                ids_array
-            )
-        };
+        // this.model_constructor.prototype['detach'] = function (relation: string, ids?: number | string | number[] | string[]): void {
+        //     const id = self.getPrimaryKeyValue(this);
+        //
+        //     if (!self.has(id)) {
+        //         // todo error object doesn't exist
+        //         return;
+        //     }
+        //
+        //     const ids_array: any = (!Array.isArray(ids)) ? [ids] : ids;
+        //
+        //     self.romsController.detach(
+        //         self.getName(),
+        //         relation,
+        //         [id],
+        //         ids_array
+        //     )
+        // };
 
         this.model_constructor.prototype['addRelation'] = function (relation: string, object: any | any[]): void {
             const id = self.getPrimaryKeyValue(this);
@@ -327,24 +328,8 @@ export class ModelStorage {
         };
     }
 
-    public createRelationGetters(): void {
-        for (const relation of this.relationStorageContainer.get()) {
-            Object.defineProperties(this.model_constructor.prototype, {
-                [relation.getKey()]: {
-                    configurable: true,
-                    get: function () {
-                        console.log('fout');
-                        return relation.findByObject(this);
-                    },
-                    set: function () {
-                        throw 'Relation properties can\'t be overwritten'
-                    }
-                }
-            })
-        }
-    }
-
-    private getPrimaryKeyValue(object: {[key: string]: unknown }): string | number {
+    // public getPrimaryKeyValue(object: {[key: string]: unknown }): string | number {
+    public getPrimaryKeyValue(object: any): string | number { // todo fix type (now also used in model)
 
         if (!object[this.getPrimaryKey()]) {
             throw new Error(`Primary key "${this.getPrimaryKey()}" not found on given object.`);
