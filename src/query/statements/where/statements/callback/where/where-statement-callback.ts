@@ -11,6 +11,7 @@ import {WhereDoesntHaveStatement} from "../../where-doesnt-have-statement";
 import {WhereNoneHaveStatement} from "../../where-none-have-statement";
 import {WhereAllHaveStatement} from "../../where-all-have-statement";
 
+// add all the where calls
 export class WhereStatementCallback {
 
     private statement: WhereStatementCallbackStatement;

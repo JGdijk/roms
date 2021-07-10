@@ -1,4 +1,3 @@
-
 import {RomsController} from "../roms/roms-controller";
 import {Observable} from "rxjs";
 import {QueryDataController} from "./data/query-data-controller";
@@ -20,6 +19,8 @@ import {OrderByStatement} from "./statements/order/order-by-statement";
 import {JoinCallbackStatement} from "./statements/join/statements/callback/join-callback-statement";
 import {JoinStatement} from "./statements/join/statements/join-statement";
 import {ModelStorage} from "../store/model-storage";
+import {WhereStatementCallback} from "./statements/where/statements/callback/where/where-statement-callback";
+import {JoinCallback} from "./statements/join/statements/callback/join-callback";
 
 export class QueryBuilder {
 
@@ -115,8 +116,22 @@ export class QueryBuilder {
         return this;
     }
 
+    public orWhereBetween(key: string, low: number, high: number): QueryBuilder {
+        this.orWhere((callback: WhereStatementCallback) => {
+            callback.whereBetween(key, low, high);
+        })
+        return this;
+    }
+
     public whereNotBetween(key: string, low: number, high: number): QueryBuilder {
         this.queryDataController.getQueryData().getWhereStatementController().add(new WhereNotBetweenStatement(key, low, high));
+        return this;
+    }
+
+    public orWhereNotBetween(key: string, low: number, high: number): QueryBuilder {
+        this.orWhere((callback: WhereStatementCallback) => {
+            callback.whereNotBetween(key, low, high);
+        })
         return this;
     }
 
@@ -125,8 +140,22 @@ export class QueryBuilder {
         return this;
     }
 
+    public orWhereIn(key: string, values: number[] | string[]): QueryBuilder {
+        this.orWhere((callback: WhereStatementCallback) => {
+            callback.whereIn(key, values);
+        })
+        return this;
+    }
+
     public whereNotIn(key: string, values: number[] | string[]): QueryBuilder {
         this.queryDataController.getQueryData().getWhereStatementController().add(new WhereNotInStatement(key, values));
+        return this;
+    }
+
+    public orWhereNotIn(key: string, values: number[] | string[]): QueryBuilder {
+        this.orWhere((callback: WhereStatementCallback) => {
+            callback.whereNotIn(key, values);
+        })
         return this;
     }
 
@@ -135,8 +164,22 @@ export class QueryBuilder {
         return this;
     }
 
+    public orWhereExists(key: string): QueryBuilder {
+        this.orWhere((callback: WhereStatementCallback) => {
+            callback.whereExists(key);
+        })
+        return this;
+    }
+
     public whereNotExists(key: string): QueryBuilder {
         this.queryDataController.getQueryData().getWhereStatementController().add(new WhereNotExistsStatement(key));
+        return this;
+    }
+
+    public orWhereNotExists(key: string): QueryBuilder {
+        this.orWhere((callback: WhereStatementCallback) => {
+            callback.whereNotExists(key);
+        })
         return this;
     }
 
@@ -145,8 +188,22 @@ export class QueryBuilder {
         return this;
     }
 
+    public orWhereEmpty(key: string): QueryBuilder {
+        this.orWhere((callback: WhereStatementCallback) => {
+            callback.whereEmpty(key);
+        })
+        return this;
+    }
+
     public whereNotEmpty(key: string): QueryBuilder {
         this.queryDataController.getQueryData().getWhereStatementController().add(new WhereNotEmptyStatement(key));
+        return this;
+    }
+
+    public orWhereNotEmpty(key: string): QueryBuilder {
+        this.orWhere((callback: WhereStatementCallback) => {
+            callback.whereNotEmpty(key);
+        })
         return this;
     }
 
@@ -165,6 +222,14 @@ export class QueryBuilder {
         return this;
     }
 
+    public orWhereHas(key: string, callback?: any): QueryBuilder {
+        //todo checks if relation is not found
+        this.orWhere((callback: WhereStatementCallback) => {
+            callback.whereHas(key, callback);
+        })
+        return this;
+    }
+
     public whereDoesntHave(key: string, callback?: any): QueryBuilder {
         const relation = this.modelStorage.getRelationStorageContainer().find(key);
 
@@ -174,6 +239,14 @@ export class QueryBuilder {
             this.queryDataController.getQueryData().getWhereStatementController().add(new WhereDoesntHaveStatement(relation));
         }
 
+        return this;
+    }
+
+    public orWhereDoesntHave(key: string, callback?: any): QueryBuilder {
+        //todo checks if relation is not found
+        this.orWhere((callback: WhereStatementCallback) => {
+            callback.whereDoesntHave(key, callback);
+        })
         return this;
     }
 
@@ -192,26 +265,50 @@ export class QueryBuilder {
     public with(name: string | string[], callback?: any): QueryBuilder { //todo fix type
         if (callback && !Array.isArray(name)) {
 
-            if (!this.modelStorage.getRelationStorageContainer().hasKey(name)) {
-                return this;
+            const splitNames = name.split('.');
+
+            if (splitNames.length > 1) {
+                const relation = this.modelStorage.getRelationStorageContainer().find(splitNames[0]);
+                const chained_relation_string = splitNames.slice(1).join('.')
+                this.queryDataController.getQueryData().getJoinStatementController().add(new JoinCallbackStatement(relation, callback, chained_relation_string))
+            } else {
+                const relation = this.modelStorage.getRelationStorageContainer().find(name);
+                this.queryDataController.getQueryData().getJoinStatementController().add(new JoinCallbackStatement(relation, callback))
             }
 
-            const relation = this.modelStorage.getRelationStorageContainer().find(name);
-            this.queryDataController.getQueryData().getJoinStatementController().add(new JoinCallbackStatement(relation, callback))
         } else {
             if (!Array.isArray(name)) {
-                if (!this.modelStorage.getRelationStorageContainer().hasKey(name)) {
-                    return this;
+
+                const splitNames = name.split('.');
+
+                if (splitNames.length > 1) {
+                    const relation = this.modelStorage.getRelationStorageContainer().find(splitNames[0]);
+                    const chained_relation_string = splitNames.slice(1).join('.')
+                    // todo fix the type of callback
+                    this.queryDataController.getQueryData().getJoinStatementController().add(new JoinCallbackStatement(relation, (callback: JoinCallback) => {
+                        callback.with(chained_relation_string);
+                    }))
+                } else {
+                    const relation = this.modelStorage.getRelationStorageContainer().find(name);
+                    this.queryDataController.getQueryData().getJoinStatementController().add(new JoinStatement(relation));
                 }
-                const relation = this.modelStorage.getRelationStorageContainer().find(name);
-                this.queryDataController.getQueryData().getJoinStatementController().add(new JoinStatement(relation));
             } else {
                 for (const v of name) {
-                    if (!this.modelStorage.getRelationStorageContainer().hasKey(v)) {
-                        return this;
+
+                    const splitNames = v.split('.');
+
+                    if (splitNames.length > 1) {
+                        const relation = this.modelStorage.getRelationStorageContainer().find(splitNames[0]);
+                        const chained_relation_string = splitNames.slice(1).join('.')
+                        // todo changes this because here we don't have to pass the callback, we just do it to fix type
+                        this.queryDataController.getQueryData().getJoinStatementController().add(new JoinCallbackStatement(relation, (callback: JoinCallback) => {
+                            callback.with(chained_relation_string);
+                        }))
+                    } else {
+                        const relation = this.modelStorage.getRelationStorageContainer().find(v);
+                        this.queryDataController.getQueryData().getJoinStatementController().add(new JoinStatement(relation));
+
                     }
-                    const relation = this.modelStorage.getRelationStorageContainer().find(v);
-                    this.queryDataController.getQueryData().getJoinStatementController().add(new JoinStatement(relation));
                 }
             }
         }

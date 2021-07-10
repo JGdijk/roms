@@ -85,40 +85,80 @@ export class QueryStarter {
         return this.createQuery().whereBetween(key, low, high);
     }
 
+    public orWhereBetween(key: string, low: number, high: number): QueryBuilder {
+        return this.createQuery().orWhereBetween(key, low, high);
+    }
+
     public whereNotBetween(key: string, low: number, high: number): QueryBuilder {
         return this.createQuery().whereNotBetween(key, low, high);
+    }
+
+    public orWhereNotBetween(key: string, low: number, high: number): QueryBuilder {
+        return this.createQuery().orWhereNotBetween(key, low, high);
     }
 
     public whereIn(key: string, values: number[] | string[]): QueryBuilder {
         return this.createQuery().whereIn(key, values);
     }
 
+    public orWhereIn(key: string, values: number[] | string[]): QueryBuilder {
+        return this.createQuery().orWhereIn(key, values);
+    }
+
     public whereNotIn(key: string, values: number[] | string[]): QueryBuilder {
         return this.createQuery().whereNotIn(key, values);
+    }
+
+    public orWhereNotIn(key: string, values: number[] | string[]): QueryBuilder {
+        return this.createQuery().orWhereNotIn(key, values);
     }
 
     public whereExists(key: string): QueryBuilder {
         return this.createQuery().whereExists(key);
     }
 
+    public orWhereExists(key: string): QueryBuilder {
+        return this.createQuery().orWhereExists(key);
+    }
+
     public whereNotExists(key: string): QueryBuilder {
         return this.createQuery().whereNotExists(key);
+    }
+
+    public orWhereNotExists(key: string): QueryBuilder {
+        return this.createQuery().orWhereNotExists(key);
     }
 
     public whereEmpty(key: string): QueryBuilder {
         return this.createQuery().whereEmpty(key);
     }
 
+    public orWhereEmpty(key: string): QueryBuilder {
+        return this.createQuery().orWhereEmpty(key);
+    }
+
     public whereNotEmpty(key: string): QueryBuilder {
         return this.createQuery().whereNotEmpty(key);
+    }
+
+    public orWhereNotEmpty(key: string): QueryBuilder {
+        return this.createQuery().orWhereNotEmpty(key);
     }
 
     public whereHas(key: string, callback?: any): QueryBuilder {
         return this.createQuery().whereHas(key, callback);
     }
 
+    public orWhereHas(key: string, callback?: any): QueryBuilder {
+        return this.createQuery().orWhereHas(key, callback);
+    }
+
     public whereDoesntHave(key: string, callback?: any): QueryBuilder {
         return this.createQuery().whereDoesntHave(key, callback);
+    }
+
+    public orWhereDoesntHave(key: string, callback?: any): QueryBuilder {
+        return this.createQuery().orWhereDoesntHave(key, callback);
     }
 
     /*************************** ordery by ***************************

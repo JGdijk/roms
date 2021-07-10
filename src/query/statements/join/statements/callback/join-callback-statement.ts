@@ -15,14 +15,18 @@ export class JoinCallbackStatement implements JoinStatementInterface {
     private joinStatementController: JoinStatementController;
     private whereStatementController: WhereStatementController;
 
-    constructor(relationStorage: RelationStorage, callback: JoinCallback) {
+    constructor(relationStorage: RelationStorage, callback: any, chainedRelations?: string) {
         this.relationStorage = relationStorage;
 
         this.orderByStatementController = new OrderByStatementController(relationStorage.getRelationModelStorage().getPrimaryKey());
         this.joinStatementController = new JoinStatementController();
-        this.whereStatementController = new WhereStatementController(this.relationStorage.getRelationModelStorage());
+        this.whereStatementController = new WhereStatementController(relationStorage.getRelationModelStorage());
 
-        this.processCallback(callback);
+        if (chainedRelations) {
+            this.processChainedRelations(chainedRelations, callback);
+        } else {
+            this.processCallback(callback);
+        }
     }
 
     public attach(object: any): void {
@@ -132,6 +136,11 @@ export class JoinCallbackStatement implements JoinStatementInterface {
 
     public getRelationStorage(): RelationStorage {
         return this.relationStorage;
+    }
+
+    // todo should extend on a baseclass
+    public processChainedRelations(relation: string, callback: any) {
+
     }
 
 }
